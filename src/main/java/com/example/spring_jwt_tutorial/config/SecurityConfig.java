@@ -36,7 +36,10 @@ public class SecurityConfig {
                         auth.requestMatchers("/auth/sign-in", "/auth/sign-up").permitAll()
                                 .anyRequest().authenticated())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .addFilterBefore(jwtAuthenticationFilter, AuthenticationFilter.class).exceptionHandling(e -> e.authenticationEntryPoint(new JwtAuthenticationEntryPoint()));
+                .addFilterBefore(jwtAuthenticationFilter, AuthenticationFilter.class).exceptionHandling(e -> {
+                    e.authenticationEntryPoint(new JwtAuthenticationEntryPoint());
+                    e.accessDeniedHandler(new JwtAccessDeniedHandler());
+                });
 
         return http.build();
 
@@ -45,7 +48,7 @@ public class SecurityConfig {
     @Bean
     CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(Arrays.asList("http://localhost:5173", "http://localhost:3000"));
+        configuration.setAllowedOrigins(Arrays.asList("http://localhost:5173/", "http://localhost:3000/"));
         configuration.setAllowedMethods(List.of("*"));
         configuration.setAllowedHeaders(List.of("*"));
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
